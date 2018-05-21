@@ -1,27 +1,28 @@
 var mssql = require('mssql');
 
 module.exports = (app) => {
-    app.route('/api/ussd/arrived')
+    app.route('/api/ussd/discharged')
         .get((req, res) => {
 
             const mobile = req.query.mobile;
             const sessionid = req.query.sessionid;
             const call = req.query.call;
             const containerNo = call;
-            console.log(call);
+
             if (mobile == null || sessionid == null || call == null) {
                 res.send('خطا در کد کانتینر ارسال شده توسط کاربر');
             }
 
             runQuery(estelamTakhliehQuery(containerNo))
                 .then(result => {
+                    console.log(JSON.stringify(result));
                     var response = '';
-                    const recordset = result.recordset[0];
-                    console.log(`result:${recordset}`);
-                    if (recordset)
-                        res.send(`کانتینر شماره ${containerNo} تا کنون تخلیه نشده است`);
-                    else
-                        res.status(200).json(recordset);
+                    if (result.rowsAffected == 0)
+                        res.send(`تا کنون تخلیه نشده است ${containerNo} کانتینر شماره`);
+                    else {
+                        const record = result.recordset[0];
+                        res.json(record);
+                    }
                 })
                 .catch(err => {
                     console.log(`error:${err}`);
@@ -31,14 +32,16 @@ module.exports = (app) => {
 
     function runQuery(queryString) {
         return new Promise((resolve, reject) => {
-            mssql.connect(connectionConfig)
+            var connection = mssql.connect(connectionConfig)
                 .then(pool => {
                     return pool.request()
                         .query(queryString).then(result => {
+                            mssql.close();
                             resolve(result);
                         })
                 })
                 .catch(err => {
+                    mssql.close();
                     reject(err);
                 })
         });
