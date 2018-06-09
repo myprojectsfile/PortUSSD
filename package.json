@@ -2,7 +2,7 @@
   "name": "ussd",
   "version": "1.0.0",
   "description": "ussd api service for bushehr port",
-  "main": "index.js",
+  "main": "server.js",
   "author": "mohammad ahmadi",
   "license": "MIT",
   "dependencies": {

@@ -1,7 +1,6 @@
 var express = require('express');
 var http = require('http');
 var cors = require('cors');
-var mssql = require('mssql');
 var bodyParser = require('body-parser');
 var usseController = require('./ussd.controller');
 
@@ -34,7 +33,7 @@ app.use((err, req, res, next) => {
 
 // run server
 
-const port = process.env.PORT || '3200';
+const port = process.env.PORT || '8080';
 app.set('port', port);
 
 const server = http.createServer(app);
